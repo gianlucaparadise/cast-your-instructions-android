@@ -5,9 +5,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
+import com.gianlucaparadise.castyourinstructions.models.Recipe
 import com.google.android.gms.cast.framework.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInteractionListener {
+
+    private val TAG = "Cast-your-instructions"
 
     private var mCastContext: CastContext? = null
     private var mediaRouteMenuItem: MenuItem? = null
@@ -19,6 +23,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val listFragment = RecipesListFragment.newInstance();
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainContainer, listFragment)
+            .commit()
 
         mCastContext = CastContext.getSharedInstance(this)
         mSessionManager = CastContext.getSharedInstance(this).sessionManager
@@ -87,5 +97,9 @@ class MainActivity : AppCompatActivity() {
             Log.d(tag, "onSessionEnded")
             finish()
         }
+    }
+
+    override fun onListFragmentInteraction(item: Recipe?) {
+        Log.d(TAG, "Recipe clicked $item")
     }
 }
