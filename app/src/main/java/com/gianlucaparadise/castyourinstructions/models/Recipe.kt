@@ -2,8 +2,9 @@ package com.gianlucaparadise.castyourinstructions.models
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class Instruction {
+class Instruction : Serializable {
 
     @SerializedName("name")
     @Expose
@@ -20,7 +21,7 @@ class Instruction {
 
 }
 
-class Recipe {
+class Recipe : Serializable {
 
     @SerializedName("title")
     @Expose
@@ -34,4 +35,4 @@ class Recipe {
 
 }
 
-class Recipes : ArrayList<Recipe>() {}
+class Recipes : ArrayList<Recipe>()

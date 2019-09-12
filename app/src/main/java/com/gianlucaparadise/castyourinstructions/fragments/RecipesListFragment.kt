@@ -18,9 +18,7 @@ import java.io.InputStreamReader
 
 
 /**
- * A fragment representing a list of Items.
- * Activities containing this fragment MUST implement the
- * [RecipesListFragment.OnListFragmentInteractionListener] interface.
+ * A fragment representing a list of Recipes.
  */
 class RecipesListFragment : Fragment() {
 
@@ -86,7 +84,7 @@ class RecipesListFragment : Fragment() {
      * for more information.
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: Recipe?)
+        fun onListFragmentInteraction(recipe: Recipe?)
     }
 
     companion object {

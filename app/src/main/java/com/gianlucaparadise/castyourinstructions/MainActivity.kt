@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment
 import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
 import com.gianlucaparadise.castyourinstructions.models.Recipe
 import com.google.android.gms.cast.framework.*
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         val listFragment = RecipesListFragment.newInstance();
         supportFragmentManager
             .beginTransaction()
+            .addToBackStack(listFragment.javaClass.simpleName)
             .replace(R.id.mainContainer, listFragment)
             .commit()
 
@@ -99,7 +101,15 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         }
     }
 
-    override fun onListFragmentInteraction(item: Recipe?) {
-        Log.d(TAG, "Recipe clicked $item")
+    override fun onListFragmentInteraction(recipe: Recipe?) {
+        Log.d(TAG, "Recipe clicked $recipe")
+        if (recipe == null) return
+
+        val detailFragment = RecipeDetailFragment.newInstance(recipe)
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(detailFragment.javaClass.simpleName)
+            .replace(R.id.mainContainer, detailFragment)
+            .commit()
     }
 }
