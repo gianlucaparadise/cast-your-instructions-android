@@ -1,14 +1,14 @@
 package com.gianlucaparadise.castyourinstructions.fragments
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyInstructionRecyclerViewAdapter
-
 import com.gianlucaparadise.castyourinstructions.models.Recipe
 import kotlinx.android.synthetic.main.fragment_instruction_list.*
 
@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.fragment_instruction_list.*
  */
 class RecipeDetailFragment : Fragment() {
 
+
+    private var listener: OnDetailFragmentInteractionListener? = null
     private lateinit var recipe: Recipe
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,30 @@ class RecipeDetailFragment : Fragment() {
             this.list.layoutManager = LinearLayoutManager(context)
             this.list.adapter = MyInstructionRecyclerViewAdapter(instructions)
         }
+
+        this.btnSend.setOnClickListener(onSendClicked)
+    }
+
+    private val onSendClicked: View.OnClickListener = View.OnClickListener {
+        listener?.onCastClicked(recipe)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnDetailFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+    interface OnDetailFragmentInteractionListener {
+        fun onCastClicked(recipe: Recipe)
     }
 
     companion object {

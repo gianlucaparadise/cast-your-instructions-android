@@ -9,8 +9,10 @@ import com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment
 import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
 import com.gianlucaparadise.castyourinstructions.models.Recipe
 import com.google.android.gms.cast.framework.*
+import com.google.gson.Gson
 
-class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInteractionListener,
+    RecipeDetailFragment.OnDetailFragmentInteractionListener {
 
     private val TAG = "Cast-your-instructions"
 
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listFragment = RecipesListFragment.newInstance();
+        val listFragment = RecipesListFragment.newInstance()
         supportFragmentManager
             .beginTransaction()
             .addToBackStack(listFragment.javaClass.simpleName)
@@ -98,6 +100,24 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.d(tag, "onSessionEnded")
             finish()
+        }
+    }
+
+    override fun onCastClicked(recipe: Recipe) {
+        try {
+            val castSession = mCastSession
+            if (castSession == null) {
+                Log.d("MainActivity", "No session")
+                return
+            }
+
+            val gson = Gson()
+            val recipeString = gson.toJson(recipe)
+            castSession.sendMessage("urn:x-cast:cast-your-instructions", recipeString)
+
+        } catch (ex: Exception) {
+            Log.e(TAG, "Error while casting:")
+            Log.e(TAG, ex.toString())
         }
     }
 
