@@ -15,21 +15,18 @@ import kotlinx.android.synthetic.main.fragment_recipe.view.*
  * [RecyclerView.Adapter] that can display a [Recipe] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyRecipeRecyclerViewAdapter(
-    private val mValues: List<Recipe>,
-    private val mListener: OnListFragmentInteractionListener?
-) : RecyclerView.Adapter<MyRecipeRecyclerViewAdapter.ViewHolder>() {
+class MyRecipeRecyclerViewAdapter// Notify the active callbacks interface (the activity, if the fragment is attached to
+// one) that an item has been selected.
+    (private val mListener: OnListFragmentInteractionListener?) :
+    RecyclerView.Adapter<MyRecipeRecyclerViewAdapter.ViewHolder>() {
+
+    var recipes: List<Recipe>? = null
+        set(value) {
+            field = value
+            this.notifyDataSetChanged()
+        }
 
     private val mOnClickListener: View.OnClickListener
-
-    init {
-        mOnClickListener = View.OnClickListener { v ->
-            val item = v.tag as Recipe
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-            mListener?.onListFragmentInteraction(item)
-        }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -38,7 +35,9 @@ class MyRecipeRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mValues[position]
+        if (recipes == null) return
+
+        val item = recipes!![position]
         holder.mContentView.text = item.title
 
         with(holder.mView) {
@@ -47,13 +46,22 @@ class MyRecipeRecyclerViewAdapter(
         }
     }
 
-    override fun getItemCount(): Int = mValues.size
+    override fun getItemCount(): Int = recipes?.size ?: 0
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mContentView: TextView = mView.content
 
         override fun toString(): String {
             return super.toString() + " '" + mContentView.text + "'"
+        }
+    }
+
+    init {
+        mOnClickListener = View.OnClickListener { v ->
+            val item = v.tag as Recipe
+            // Notify the active callbacks interface (the activity, if the fragment is attached to
+            // one) that an item has been selected.
+            mListener?.onListFragmentInteraction(item)
         }
     }
 }

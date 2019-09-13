@@ -6,56 +6,61 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyRecipeRecyclerViewAdapter
 import com.gianlucaparadise.castyourinstructions.models.Recipe
 import com.gianlucaparadise.castyourinstructions.models.Recipes
-import com.google.gson.Gson
-import java.io.BufferedReader
-import java.io.InputStreamReader
-
+import com.gianlucaparadise.castyourinstructions.viewmodels.RecipesListViewModel
 
 /**
  * A fragment representing a list of Recipes.
  */
 class RecipesListFragment : Fragment() {
 
+    private lateinit var viewModel: RecipesListViewModel
     private var listener: OnListFragmentInteractionListener? = null
+
+    private var recipesAdapter: MyRecipeRecyclerViewAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_recipe_list, container, false)
+        return inflater.inflate(R.layout.fragment_recipe_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Set the adapter
         if (view is RecyclerView) {
-            val recipes = getRecipes()
+            view.layoutManager = LinearLayoutManager(context)
 
-            if (recipes != null) {
-                view.layoutManager = LinearLayoutManager(context)
-                view.adapter =
-                    MyRecipeRecyclerViewAdapter(recipes, listener)
-            }
+            recipesAdapter = MyRecipeRecyclerViewAdapter(listener)
+            view.adapter = recipesAdapter
         }
-        return view
     }
 
-    private fun getRecipes(): Recipes? {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = activity?.run {
+            ViewModelProviders.of(this)[RecipesListViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
+        observeViewModel(viewModel)
+    }
 
-        try {
-            val raw = resources.openRawResource(R.raw.recipes)
-            val reader = BufferedReader(InputStreamReader(raw))
-            val gson = Gson()
-            val recipes = gson.fromJson(reader, Recipes::class.java)
-
-            return recipes
-
-        } catch (ex: Exception) {
-            return null
-        }
+    private fun observeViewModel(viewModel: RecipesListViewModel) {
+        // Update the list when the data changes
+        viewModel.recipesObservable.observe(this,
+            Observer<Recipes> { recipes ->
+                if (recipes != null) {
+                    recipesAdapter?.recipes = recipes
+                }
+            })
     }
 
     override fun onAttach(context: Context) {
