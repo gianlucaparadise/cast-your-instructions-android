@@ -4,7 +4,9 @@ package com.gianlucaparadise.castyourinstructions.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.databinding.FragmentRecipeBinding
 import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment.OnListFragmentInteractionListener
 import com.gianlucaparadise.castyourinstructions.models.Recipe
@@ -27,8 +29,7 @@ class MyRecipeRecyclerViewAdapter// Notify the active callbacks interface (the a
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = FragmentRecipeBinding.inflate(inflater, parent, false)
-        // val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_recipe, parent, false)
+        val binding: FragmentRecipeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recipe, parent, false)
         return ViewHolder(binding)
     }
 

@@ -48,7 +48,7 @@ class RecipesListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = activity?.run {
-            ViewModelProviders.of(this)[RecipesListViewModel::class.java]
+            ViewModelProviders.of(activity!!)[RecipesListViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
         observeViewModel(viewModel)
     }

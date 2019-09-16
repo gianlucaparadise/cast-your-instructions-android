@@ -2,14 +2,20 @@ package com.gianlucaparadise.castyourinstructions.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyInstructionRecyclerViewAdapter
+import com.gianlucaparadise.castyourinstructions.databinding.FragmentInstructionListBinding
 import com.gianlucaparadise.castyourinstructions.models.Recipe
+import com.gianlucaparadise.castyourinstructions.viewmodels.RecipeDetailViewModel
 import kotlinx.android.synthetic.main.fragment_instruction_list.*
 
 /**
@@ -17,41 +23,51 @@ import kotlinx.android.synthetic.main.fragment_instruction_list.*
  */
 class RecipeDetailFragment : Fragment() {
 
-
+    private lateinit var viewModel: RecipeDetailViewModel
     private var listener: OnDetailFragmentInteractionListener? = null
-    private lateinit var recipe: Recipe
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            recipe = it.getSerializable(ARG_RECIPE) as Recipe
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_instruction_list, container, false)
+        val recipe = arguments?.let {
+            it.getSerializable(ARG_RECIPE) as Recipe
+        }
+
+        val viewModelFactory = RecipeDetailViewModel.RecipeDetailViewModelFactory(recipe)
+        viewModel = activity?.run {
+            ViewModelProviders.of(activity!!, viewModelFactory)[RecipeDetailViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
+
+        val binding: FragmentInstructionListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_instruction_list, container, false)
+        val view : View  = binding.root
+
+        binding.lifecycleOwner = this
+        binding.vm = viewModel
+        binding.handlers = this
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.detail_title.text = recipe.title
+        this.list.layoutManager = LinearLayoutManager(context)
+        this.list.adapter = MyInstructionRecyclerViewAdapter()
 
-        val instructions = recipe.instructions;
-        // Set the adapter
-        if (instructions != null) {
-            this.list.layoutManager = LinearLayoutManager(context)
-            this.list.adapter = MyInstructionRecyclerViewAdapter(instructions)
-        }
-
-        this.btnSend.setOnClickListener(onSendClicked)
+        observeViewModel(viewModel)
     }
 
-    private val onSendClicked: View.OnClickListener = View.OnClickListener {
+    private fun observeViewModel(viewModel: RecipeDetailViewModel) {
+        val recipe= viewModel.recipe ?: return
+
+        val adapter = this.list.adapter as? MyInstructionRecyclerViewAdapter
+        adapter?.instructions = recipe.instructions
+    }
+
+    fun onSendClicked(view: View) {
+        Log.d("Send", "CLICKED")
+        val recipe = viewModel.recipe ?: return
         listener?.onCastClicked(recipe)
     }
 

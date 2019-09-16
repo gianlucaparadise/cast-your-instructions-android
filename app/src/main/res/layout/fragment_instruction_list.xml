@@ -1,61 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-            android:id="@+id/detail_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/text_margin"
-            android:layout_marginRight="@dimen/text_margin"
-            android:layout_marginTop="@dimen/text_margin"
-            android:layout_marginBottom="@dimen/text_margin"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            tools:text="title"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSend"
-    />
+    <data>
+        <import type="androidx.lifecycle.LiveData" />
+        <variable name="vm" type="com.gianlucaparadise.castyourinstructions.viewmodels.RecipeDetailViewModel"/>
+        <variable name="handlers" type="com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment"/>
+    </data>
 
-    <Button
-            android:id="@+id/btnSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cast"
-            app:layout_constraintTop_toTopOf="@+id/detail_title"
-            app:layout_constraintBottom_toBottomOf="@id/detail_title"
-            app:layout_constraintEnd_toEndOf="parent"
-    />
-
-    <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/header_barrier"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="detail_title,btnSend"
+            android:layout_height="match_parent">
 
-    />
+        <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/text_margin"
+                android:layout_marginRight="@dimen/text_margin"
+                android:layout_marginTop="@dimen/text_margin"
+                android:layout_marginBottom="@dimen/text_margin"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                tools:text="title"
+                android:text="@{vm.recipe.title}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnSend"
+        />
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list"
-            android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            app:layoutManager="LinearLayoutManager"
-            tools:context=".fragments.RecipeDetailFragment"
-            tools:listitem="@layout/fragment_instruction"
-            app:layout_constraintTop_toBottomOf="@+id/header_barrier"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-    />
+        <Button
+                android:id="@+id/btnSend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cast"
+                android:onClick="@{handlers::onSendClicked}"
+                app:layout_constraintTop_toTopOf="@+id/detail_title"
+                app:layout_constraintBottom_toBottomOf="@id/detail_title"
+                app:layout_constraintEnd_toEndOf="parent"
+        />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/header_barrier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="detail_title,btnSend"
+
+        />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list"
+                android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:layoutManager="LinearLayoutManager"
+                tools:context=".fragments.RecipeDetailFragment"
+                tools:listitem="@layout/fragment_instruction"
+                app:layout_constraintTop_toBottomOf="@+id/header_barrier"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
