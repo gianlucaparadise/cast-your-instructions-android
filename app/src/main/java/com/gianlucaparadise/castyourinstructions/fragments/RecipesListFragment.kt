@@ -91,14 +91,4 @@ class RecipesListFragment : Fragment() {
     interface OnListFragmentInteractionListener {
         fun onListFragmentInteraction(recipe: Recipe?)
     }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance() =
-            RecipesListFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }

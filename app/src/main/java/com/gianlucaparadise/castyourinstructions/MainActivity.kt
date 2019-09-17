@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
 import com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment
 import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
+import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragmentDirections
 import com.gianlucaparadise.castyourinstructions.models.Recipe
 import com.google.android.gms.cast.framework.*
 import com.google.gson.Gson
@@ -26,13 +28,6 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val listFragment = RecipesListFragment.newInstance()
-        supportFragmentManager
-            .beginTransaction()
-            .addToBackStack(listFragment.javaClass.simpleName)
-            .replace(R.id.mainContainer, listFragment)
-            .commit()
 
         mCastContext = CastContext.getSharedInstance(this)
         mSessionManager = CastContext.getSharedInstance(this).sessionManager
@@ -125,11 +120,7 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         Log.d(TAG, "Recipe clicked $recipe")
         if (recipe == null) return
 
-        val detailFragment = RecipeDetailFragment.newInstance(recipe)
-        supportFragmentManager
-            .beginTransaction()
-            .addToBackStack(detailFragment.javaClass.simpleName)
-            .replace(R.id.mainContainer, detailFragment)
-            .commit()
+        val action = RecipesListFragmentDirections.actionRecipesListFragmentToRecipeDetailFragment(recipe)
+        findNavController(R.id.nav_host_fragment).navigate(action)
     }
 }

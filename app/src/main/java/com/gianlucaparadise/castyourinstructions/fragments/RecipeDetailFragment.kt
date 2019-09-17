@@ -8,8 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyInstructionRecyclerViewAdapter
@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_instruction_list.*
  */
 class RecipeDetailFragment : Fragment() {
 
+    val arguments: RecipeDetailFragmentArgs by navArgs()
     private lateinit var viewModel: RecipeDetailViewModel
     private var listener: OnDetailFragmentInteractionListener? = null
 
@@ -30,9 +31,7 @@ class RecipeDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val recipe = arguments?.let {
-            it.getSerializable(ARG_RECIPE) as Recipe
-        }
+        val recipe = arguments.recipe
 
         val viewModelFactory = RecipeDetailViewModel.RecipeDetailViewModelFactory(recipe)
         viewModel = activity?.run {
@@ -87,18 +86,5 @@ class RecipeDetailFragment : Fragment() {
 
     interface OnDetailFragmentInteractionListener {
         fun onCastClicked(recipe: Recipe)
-    }
-
-    companion object {
-
-        const val ARG_RECIPE = "recipe"
-
-        @JvmStatic
-        fun newInstance(recipe: Recipe) =
-            RecipeDetailFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARG_RECIPE, recipe)
-                }
-            }
     }
 }
