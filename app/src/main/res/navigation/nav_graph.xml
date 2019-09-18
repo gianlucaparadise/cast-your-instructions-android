@@ -6,14 +6,14 @@
 
     <fragment android:id="@+id/recipesListFragment"
               android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment"
-              android:label="fragment_recipe_list"
+              tools:label="RecipesListFragment"
               tools:layout="@layout/fragment_recipe_list">
         <action android:id="@+id/action_recipesListFragment_to_recipeDetailFragment"
                 app:destination="@id/recipeDetailFragment"/>
     </fragment>
     <fragment android:id="@+id/recipeDetailFragment"
               android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment"
-              android:label="RecipeDetailFragment"
+              tools:label="RecipeDetailFragment"
               tools:layout="@layout/fragment_instruction_list">
         <argument android:name="recipe" app:argType="com.gianlucaparadise.castyourinstructions.models.Recipe"/>
     </fragment>
