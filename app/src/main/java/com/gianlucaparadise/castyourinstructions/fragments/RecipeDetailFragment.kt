@@ -31,12 +31,13 @@ class RecipeDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val recipe = arguments.recipe
 
-        val viewModelFactory = RecipeDetailViewModel.RecipeDetailViewModelFactory(recipe)
         viewModel = activity?.run {
-            ViewModelProviders.of(activity!!, viewModelFactory)[RecipeDetailViewModel::class.java]
+            ViewModelProviders.of(activity!!)[RecipeDetailViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
+
+        val recipe = arguments.recipe
+        viewModel.recipe = recipe
 
         val binding: FragmentInstructionListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_instruction_list, container, false)
         val view : View  = binding.root
