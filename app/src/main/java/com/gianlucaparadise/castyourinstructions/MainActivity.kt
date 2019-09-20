@@ -1,21 +1,5 @@
 package com.gianlucaparadise.castyourinstructions
 
-import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
-import com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment
-import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
-import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragmentDirections
-import com.gianlucaparadise.castyourinstructions.models.Recipe
-import com.google.android.gms.cast.framework.*
-import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInteractionListener,
     RecipeDetailFragment.OnDetailFragmentInteractionListener {
@@ -84,26 +68,30 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
 
         override fun onSessionStartFailed(p0: CastSession?, p1: Int) {
             Log.d(tag, "onSessionStartFailed")
+            player.visibility = View.GONE
         }
 
         override fun onSessionResumeFailed(p0: CastSession?, p1: Int) {
             Log.d(tag, "onSessionResumeFailed")
+            player.visibility = View.GONE
         }
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             Log.d(tag, "onSessionStarted")
             mCastSession = session
             invalidateOptionsMenu()
+            player.visibility = View.VISIBLE
         }
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.d(tag, "onSessionResumed")
             invalidateOptionsMenu()
+            player.visibility = View.VISIBLE
         }
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.d(tag, "onSessionEnded")
-            finish()
+            player.visibility = View.GONE
         }
     }
 
