@@ -6,6 +6,9 @@ import java.io.Serializable
 
 class Instruction : Serializable {
 
+    @SerializedName("id")
+    @Expose
+    var id: Int? = null
     @SerializedName("name")
     @Expose
     var name: String? = null
@@ -23,6 +26,9 @@ class Instruction : Serializable {
 
 class Recipe : Serializable {
 
+    @SerializedName("id")
+    @Expose
+    var id: Int? = null
     @SerializedName("title")
     @Expose
     var title: String? = null

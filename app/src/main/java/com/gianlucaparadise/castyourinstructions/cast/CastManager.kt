@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.navigation.navOptions
 import com.gianlucaparadise.castyourinstructions.MainActivity
-import com.gianlucaparadise.castyourinstructions.models.CastMessage
-import com.gianlucaparadise.castyourinstructions.models.MessageType
-import com.gianlucaparadise.castyourinstructions.models.Recipe
+import com.gianlucaparadise.castyourinstructions.models.*
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManager
@@ -18,14 +17,15 @@ class CastManager(
     val mainActivity: MainActivity,
     val lifecycle: Lifecycle,
     var listener: CastManagerListener? = null
-) : LifecycleObserver {
+) : LifecycleObserver, MyChannelListener {
+
     private val TAG = "CastManager"
 
-    private val gson : Gson by lazy { Gson() }
+    override val gson : Gson by lazy { Gson() }
 
     private var mCastContext: CastContext? = null
 
-    private val myChannel = MyChannel()
+    private val myChannel = MyChannel(this)
     private var mCastSession: CastSession? = null
         set(value) {
             field = value
@@ -80,6 +80,24 @@ class CastManager(
         } catch (ex: Exception) {
             Log.e(TAG, "Error while sending ${message.type}:")
             Log.e(TAG, ex.toString())
+        }
+    }
+
+    override fun onMessageReceived(responseMessage: CastMessageResponse) {
+        val listener = listener ?: return
+
+        val recipe = responseMessage.recipe
+        val selectedInstructionIndex = responseMessage.selectedInstructionIndex
+
+        when(responseMessage.type) {
+            ResponseMessageType.LOADED -> listener.onLoaded(recipe)
+            ResponseMessageType.PLAYED -> listener.onPlayed(recipe)
+            ResponseMessageType.PAUSED -> listener.onPaused(recipe)
+            ResponseMessageType.STOPPED -> listener.onStopped(recipe)
+            ResponseMessageType.SELECTED_INSTRUCTION -> listener.onSelectedInstruction(recipe, selectedInstructionIndex)
+            null -> {
+                // pass
+            }
         }
     }
 
@@ -152,7 +170,13 @@ class CastManager(
     }
 
     interface CastManagerListener {
-        fun onCastStarted();
-        fun onCastStopped();
+        fun onCastStarted() {}
+        fun onCastStopped() {}
+
+        fun onLoaded(recipe: Recipe?) {}
+        fun onPlayed(recipe: Recipe?) {}
+        fun onPaused(recipe: Recipe?) {}
+        fun onStopped(recipe: Recipe?) {}
+        fun onSelectedInstruction(recipe: Recipe?, selectedInstructionIndex: Int?) {}
     }
 }
