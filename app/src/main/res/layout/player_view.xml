@@ -1,53 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
         tools:layout_height="wrap_content"
-        tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
->
+        tools:layout_width="match_parent"
+        tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
-            android:id="@+id/title"
+            android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Casted recipe"
-            app:layout_constraintTop_toTopOf="parent"
             android:gravity="center"
-    />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Casted recipe" />
 
     <ImageButton
             android:id="@+id/play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_media_play_light"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/pause"
             android:contentDescription="play"
-    />
+            android:src="@drawable/ic_media_play_light"
+            app:layout_constraintBottom_toBottomOf="@+id/stop"
+            app:layout_constraintEnd_toStartOf="@+id/stop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/stop"
+            tools:visibility="visible" />
 
     <ImageButton
             android:id="@+id/pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_media_pause_light"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            app:layout_constraintStart_toEndOf="@+id/play"
-            app:layout_constraintEnd_toStartOf="@+id/stop"
             android:contentDescription="pause"
-    />
+            android:src="@drawable/ic_media_pause_light"
+            app:layout_constraintBottom_toBottomOf="@+id/stop"
+            app:layout_constraintEnd_toStartOf="@+id/stop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/stop"
+            tools:visibility="invisible" />
+
+    <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/play_pause_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="pause,play" />
 
     <ImageButton
             android:id="@+id/stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_media_stop_light"
-            app:layout_constraintTop_toBottomOf="@+id/title"
-            app:layout_constraintStart_toEndOf="@+id/pause"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
             android:contentDescription="stop"
-            />
+            android:src="@drawable/ic_media_stop_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/play_pause_barrier"
+            app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
 </merge>

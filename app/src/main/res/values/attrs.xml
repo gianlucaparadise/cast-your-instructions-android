@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Player">
+        <attr name="title" format="string" />
+        <attr name="titleTextColor" format="color" />
+        <attr name="playPauseState" format="enum">
+            <enum name="play" value="0" />
+            <enum name="pause" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>
