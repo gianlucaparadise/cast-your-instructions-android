@@ -4,13 +4,13 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.gianlucaparadise.castyourinstructions.cast.CastManager
-import com.gianlucaparadise.castyourinstructions.models.Recipe
+import com.gianlucaparadise.castyourinstructions.models.Routine
 
 class MainViewModel : ViewModel(), CastManager.CastManagerListener {
 
     private val TAG = "MainViewModel"
 
-    val recipeTitle: MutableLiveData<String> = MutableLiveData()
+    val routineTitle: MutableLiveData<String> = MutableLiveData()
     val currentInstructionTitle: MutableLiveData<String> = MutableLiveData()
 
     val castState: MutableLiveData<CastStateValue> = MutableLiveData()
@@ -23,7 +23,7 @@ class MainViewModel : ViewModel(), CastManager.CastManagerListener {
     val canPlay: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
-        recipeTitle.value = ""
+        routineTitle.value = ""
         castState.value = CastStateValue.STOPPED
         isPlayerVisible.value = false
         canPlay.value = true
@@ -45,34 +45,34 @@ class MainViewModel : ViewModel(), CastManager.CastManagerListener {
         currentInstructionTitle.value = null
     }
 
-    override fun onLoaded(recipe: Recipe?) {
-        super.onLoaded(recipe)
-        recipeTitle.value = recipe?.title
+    override fun onLoaded(routine: Routine?) {
+        super.onLoaded(routine)
+        routineTitle.value = routine?.title
         canPlay.value = true
         currentInstructionTitle.value = null
     }
 
-    override fun onPaused(recipe: Recipe?) {
-        super.onPaused(recipe)
+    override fun onPaused(routine: Routine?) {
+        super.onPaused(routine)
         canPlay.value = true
     }
 
-    override fun onPlayed(recipe: Recipe?) {
-        super.onPlayed(recipe)
+    override fun onPlayed(routine: Routine?) {
+        super.onPlayed(routine)
         canPlay.value = false
     }
 
-    override fun onStopped(recipe: Recipe?) {
-        super.onStopped(recipe)
+    override fun onStopped(routine: Routine?) {
+        super.onStopped(routine)
         canPlay.value = true
         currentInstructionTitle.value = null
     }
 
-    override fun onSelectedInstruction(recipe: Recipe?, selectedInstructionIndex: Int?) {
-        super.onSelectedInstruction(recipe, selectedInstructionIndex)
+    override fun onSelectedInstruction(routine: Routine?, selectedInstructionIndex: Int?) {
+        super.onSelectedInstruction(routine, selectedInstructionIndex)
         Log.d(TAG, "Selected instruction: $selectedInstructionIndex")
 
-        val instructions = recipe?.instructions ?: return
+        val instructions = routine?.instructions ?: return
         if (selectedInstructionIndex == null || selectedInstructionIndex >= instructions.size) return
 
         currentInstructionTitle.value = instructions[selectedInstructionIndex].name

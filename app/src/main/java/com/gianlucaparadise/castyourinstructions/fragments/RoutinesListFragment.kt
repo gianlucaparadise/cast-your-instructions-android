@@ -11,26 +11,26 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gianlucaparadise.castyourinstructions.R
-import com.gianlucaparadise.castyourinstructions.adapters.MyRecipeRecyclerViewAdapter
-import com.gianlucaparadise.castyourinstructions.models.Recipe
-import com.gianlucaparadise.castyourinstructions.models.Recipes
-import com.gianlucaparadise.castyourinstructions.viewmodels.RecipesListViewModel
+import com.gianlucaparadise.castyourinstructions.adapters.MyRoutineRecyclerViewAdapter
+import com.gianlucaparadise.castyourinstructions.models.Routine
+import com.gianlucaparadise.castyourinstructions.models.Routines
+import com.gianlucaparadise.castyourinstructions.viewmodels.RoutinesListViewModel
 
 /**
- * A fragment representing a list of Recipes.
+ * A fragment representing a list of Routines.
  */
-class RecipesListFragment : Fragment() {
+class RoutinesListFragment : Fragment() {
 
-    private lateinit var viewModel: RecipesListViewModel
+    private lateinit var viewModel: RoutinesListViewModel
     private var listener: OnListFragmentInteractionListener? = null
 
-    private var recipesAdapter: MyRecipeRecyclerViewAdapter? = null
+    private var routinesAdapter: MyRoutineRecyclerViewAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_recipe_list, container, false)
+        return inflater.inflate(R.layout.fragment_routine_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,25 +40,25 @@ class RecipesListFragment : Fragment() {
         if (view is RecyclerView) {
             view.layoutManager = LinearLayoutManager(context)
 
-            recipesAdapter = MyRecipeRecyclerViewAdapter(listener)
-            view.adapter = recipesAdapter
+            routinesAdapter = MyRoutineRecyclerViewAdapter(listener)
+            view.adapter = routinesAdapter
         }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = activity?.run {
-            ViewModelProviders.of(activity!!)[RecipesListViewModel::class.java]
+            ViewModelProviders.of(activity!!)[RoutinesListViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
         observeViewModel(viewModel)
     }
 
-    private fun observeViewModel(viewModel: RecipesListViewModel) {
+    private fun observeViewModel(viewModel: RoutinesListViewModel) {
         // Update the list when the data changes
-        viewModel.recipesObservable.observe(this,
-            Observer<Recipes> { recipes ->
-                if (recipes != null) {
-                    recipesAdapter?.recipes = recipes
+        viewModel.routinesObservable.observe(this,
+            Observer<Routines> { routines ->
+                if (routines != null) {
+                    routinesAdapter?.routines = routines
                 }
             })
     }
@@ -89,6 +89,6 @@ class RecipesListFragment : Fragment() {
      * for more information.
      */
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(recipe: Recipe?)
+        fun onListFragmentInteraction(routine: Routine?)
     }
 }

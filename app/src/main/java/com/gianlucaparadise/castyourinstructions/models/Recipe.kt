@@ -24,7 +24,7 @@ class Instruction : Serializable {
 
 }
 
-class Recipe : Serializable {
+class Routine : Serializable {
 
     @SerializedName("id")
     @Expose
@@ -41,4 +41,4 @@ class Recipe : Serializable {
 
 }
 
-class Recipes : ArrayList<Recipe>()
+class Routines : ArrayList<Routine>()

@@ -17,7 +17,7 @@ class MyChannel(private val listener: MyChannelListener? = null) : Cast.MessageR
         if (message == null || listener == null) return
 
         val messageResponse = listener.gson.fromJson(message, CastMessageResponse::class.java)
-        Log.d(TAG, "onMessageReceived parse: ${messageResponse.recipe?.title}")
+        Log.d(TAG, "onMessageReceived parse: ${messageResponse.routine?.title}")
         listener.onMessageReceived(messageResponse)
     }
 

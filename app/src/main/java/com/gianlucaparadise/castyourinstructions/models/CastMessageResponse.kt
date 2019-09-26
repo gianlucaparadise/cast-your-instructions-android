@@ -10,9 +10,9 @@ class CastMessageResponse : Serializable {
     @Expose
     var type: ResponseMessageType? = null
 
-    @SerializedName("recipe")
+    @SerializedName("routine")
     @Expose
-    var recipe: Recipe? = null
+    var routine: Routine? = null
 
     @SerializedName("selectedInstructionIndex")
     @Expose

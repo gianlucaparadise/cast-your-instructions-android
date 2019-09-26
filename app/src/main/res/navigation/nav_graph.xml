@@ -2,19 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
-            app:startDestination="@id/recipesListFragment">
+            app:startDestination="@id/routinesListFragment">
 
-    <fragment android:id="@+id/recipesListFragment"
-              android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment"
-              tools:label="RecipesListFragment"
-              tools:layout="@layout/fragment_recipe_list">
-        <action android:id="@+id/action_recipesListFragment_to_recipeDetailFragment"
-                app:destination="@id/recipeDetailFragment"/>
+    <fragment android:id="@+id/routinesListFragment"
+              android:name="com.gianlucaparadise.castyourinstructions.fragments.RoutinesListFragment"
+              tools:label="RoutinesListFragment"
+              tools:layout="@layout/fragment_routine_list">
+        <action android:id="@+id/action_routinesListFragment_to_routineDetailFragment"
+                app:destination="@id/routineDetailFragment"/>
     </fragment>
-    <fragment android:id="@+id/recipeDetailFragment"
-              android:name="com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment"
-              tools:label="RecipeDetailFragment"
+    <fragment android:id="@+id/routineDetailFragment"
+              android:name="com.gianlucaparadise.castyourinstructions.fragments.RoutineDetailFragment"
+              tools:label="RoutineDetailFragment"
               tools:layout="@layout/fragment_instruction_list">
-        <argument android:name="recipe" app:argType="com.gianlucaparadise.castyourinstructions.models.Recipe"/>
+        <argument android:name="routine" app:argType="com.gianlucaparadise.castyourinstructions.models.Routine"/>
     </fragment>
 </navigation>

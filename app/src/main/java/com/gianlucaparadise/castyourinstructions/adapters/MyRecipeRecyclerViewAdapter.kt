@@ -7,21 +7,21 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.gianlucaparadise.castyourinstructions.R
-import com.gianlucaparadise.castyourinstructions.databinding.FragmentRecipeBinding
-import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment.OnListFragmentInteractionListener
-import com.gianlucaparadise.castyourinstructions.models.Recipe
-import kotlinx.android.synthetic.main.fragment_recipe.view.*
+import com.gianlucaparadise.castyourinstructions.databinding.FragmentRoutineBinding
+import com.gianlucaparadise.castyourinstructions.fragments.RoutinesListFragment.OnListFragmentInteractionListener
+import com.gianlucaparadise.castyourinstructions.models.Routine
+import kotlinx.android.synthetic.main.fragment_routine.view.*
 
 /**
- * [RecyclerView.Adapter] that can display a [Recipe] and makes a call to the
+ * [RecyclerView.Adapter] that can display a [Routine] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyRecipeRecyclerViewAdapter// Notify the active callbacks interface (the activity, if the fragment is attached to
+class MyRoutineRecyclerViewAdapter// Notify the active callbacks interface (the activity, if the fragment is attached to
 // one) that an item has been selected.
     (private val mListener: OnListFragmentInteractionListener?) :
-    RecyclerView.Adapter<MyRecipeRecyclerViewAdapter.ViewHolder>() {
+    RecyclerView.Adapter<MyRoutineRecyclerViewAdapter.ViewHolder>() {
 
-    var recipes: List<Recipe>? = null
+    var routines: List<Routine>? = null
         set(value) {
             field = value
             this.notifyDataSetChanged()
@@ -29,26 +29,26 @@ class MyRecipeRecyclerViewAdapter// Notify the active callbacks interface (the a
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding: FragmentRecipeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recipe, parent, false)
+        val binding: FragmentRoutineBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_routine, parent, false)
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(recipes?.get(position))
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(routines?.get(position))
 
-    override fun getItemCount(): Int = recipes?.size ?: 0
+    override fun getItemCount(): Int = routines?.size ?: 0
 
-    fun onRecipeClicked(v: View) {
-        val item = v.tag as Recipe
+    fun onRoutineClicked(v: View) {
+        val item = v.tag as Routine
         // Notify the active callbacks interface (the activity, if the fragment is attached to
         // one) that an item has been selected.
         mListener?.onListFragmentInteraction(item)
     }
 
-    inner class ViewHolder(val binding: FragmentRecipeBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: FragmentRoutineBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Recipe?) {
+        fun bind(item: Routine?) {
             binding.item = item
-            binding.handlers = this@MyRecipeRecyclerViewAdapter
+            binding.handlers = this@MyRoutineRecyclerViewAdapter
             binding.executePendingBindings()
         }
 

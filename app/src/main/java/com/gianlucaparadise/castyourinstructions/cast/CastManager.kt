@@ -46,8 +46,8 @@ class CastManager(
         lifecycle.addObserver(this)
     }
 
-    fun load(recipe: Recipe) {
-        val message = CastMessage(MessageType.LOAD, recipe)
+    fun load(routine: Routine) {
+        val message = CastMessage(MessageType.LOAD, routine)
         sendMessage(message)
     }
 
@@ -86,15 +86,15 @@ class CastManager(
     override fun onMessageReceived(responseMessage: CastMessageResponse) {
         val listener = listener ?: return
 
-        val recipe = responseMessage.recipe
+        val routine = responseMessage.routine
         val selectedInstructionIndex = responseMessage.selectedInstructionIndex
 
         when(responseMessage.type) {
-            ResponseMessageType.LOADED -> listener.onLoaded(recipe)
-            ResponseMessageType.PLAYED -> listener.onPlayed(recipe)
-            ResponseMessageType.PAUSED -> listener.onPaused(recipe)
-            ResponseMessageType.STOPPED -> listener.onStopped(recipe)
-            ResponseMessageType.SELECTED_INSTRUCTION -> listener.onSelectedInstruction(recipe, selectedInstructionIndex)
+            ResponseMessageType.LOADED -> listener.onLoaded(routine)
+            ResponseMessageType.PLAYED -> listener.onPlayed(routine)
+            ResponseMessageType.PAUSED -> listener.onPaused(routine)
+            ResponseMessageType.STOPPED -> listener.onStopped(routine)
+            ResponseMessageType.SELECTED_INSTRUCTION -> listener.onSelectedInstruction(routine, selectedInstructionIndex)
             null -> {
                 // pass
             }
@@ -173,10 +173,10 @@ class CastManager(
         fun onCastStarted() {}
         fun onCastStopped() {}
 
-        fun onLoaded(recipe: Recipe?) {}
-        fun onPlayed(recipe: Recipe?) {}
-        fun onPaused(recipe: Recipe?) {}
-        fun onStopped(recipe: Recipe?) {}
-        fun onSelectedInstruction(recipe: Recipe?, selectedInstructionIndex: Int?) {}
+        fun onLoaded(routine: Routine?) {}
+        fun onPlayed(routine: Routine?) {}
+        fun onPaused(routine: Routine?) {}
+        fun onStopped(routine: Routine?) {}
+        fun onSelectedInstruction(routine: Routine?, selectedInstructionIndex: Int?) {}
     }
 }

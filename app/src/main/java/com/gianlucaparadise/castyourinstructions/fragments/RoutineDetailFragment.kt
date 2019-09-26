@@ -14,17 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyInstructionRecyclerViewAdapter
 import com.gianlucaparadise.castyourinstructions.databinding.FragmentInstructionListBinding
-import com.gianlucaparadise.castyourinstructions.models.Recipe
-import com.gianlucaparadise.castyourinstructions.viewmodels.RecipeDetailViewModel
+import com.gianlucaparadise.castyourinstructions.models.Routine
+import com.gianlucaparadise.castyourinstructions.viewmodels.RoutineDetailViewModel
 import kotlinx.android.synthetic.main.fragment_instruction_list.*
 
 /**
- * A fragment representing the detail of a recipe: a list of Instructions.
+ * A fragment representing the detail of a routine: a list of Instructions.
  */
-class RecipeDetailFragment : Fragment() {
+class RoutineDetailFragment : Fragment() {
 
-    val arguments: RecipeDetailFragmentArgs by navArgs()
-    private lateinit var viewModel: RecipeDetailViewModel
+    val arguments: RoutineDetailFragmentArgs by navArgs()
+    private lateinit var viewModel: RoutineDetailViewModel
     private var listener: OnDetailFragmentInteractionListener? = null
 
     override fun onCreateView(
@@ -33,11 +33,11 @@ class RecipeDetailFragment : Fragment() {
     ): View? {
 
         viewModel = activity?.run {
-            ViewModelProviders.of(activity!!)[RecipeDetailViewModel::class.java]
+            ViewModelProviders.of(activity!!)[RoutineDetailViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
-        val recipe = arguments.recipe
-        viewModel.recipe = recipe
+        val routine = arguments.routine
+        viewModel.routine = routine
 
         val binding: FragmentInstructionListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_instruction_list, container, false)
         val view : View  = binding.root
@@ -58,17 +58,17 @@ class RecipeDetailFragment : Fragment() {
         observeViewModel(viewModel)
     }
 
-    private fun observeViewModel(viewModel: RecipeDetailViewModel) {
-        val recipe= viewModel.recipe ?: return
+    private fun observeViewModel(viewModel: RoutineDetailViewModel) {
+        val routine= viewModel.routine ?: return
 
         val adapter = this.list.adapter as? MyInstructionRecyclerViewAdapter
-        adapter?.instructions = recipe.instructions
+        adapter?.instructions = routine.instructions
     }
 
     fun onSendClicked(view: View) {
         Log.d("Send", "CLICKED")
-        val recipe = viewModel.recipe ?: return
-        listener?.onCastClicked(recipe)
+        val routine = viewModel.routine ?: return
+        listener?.onCastClicked(routine)
     }
 
     override fun onAttach(context: Context) {
@@ -86,6 +86,6 @@ class RecipeDetailFragment : Fragment() {
     }
 
     interface OnDetailFragmentInteractionListener {
-        fun onCastClicked(recipe: Recipe)
+        fun onCastClicked(routine: Routine)
     }
 }

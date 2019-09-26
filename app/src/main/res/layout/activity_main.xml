@@ -54,7 +54,7 @@
                 android:background="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:visibility="@{vm.isPlayerVisible ? View.VISIBLE : View.GONE}"
-                app:title="@{vm.recipeTitle + (vm.currentInstructionTitle != null ? (`: ` + vm.currentInstructionTitle) : `` )}"
+                app:title="@{vm.routineTitle + (vm.currentInstructionTitle != null ? (`: ` + vm.currentInstructionTitle) : `` )}"
                 app:playPauseState="@{vm.canPlay ? PlayPauseStateValue.Play : PlayPauseStateValue.Pause}"
                 tools:playPauseState="play"
                 tools:visibility="visible" />

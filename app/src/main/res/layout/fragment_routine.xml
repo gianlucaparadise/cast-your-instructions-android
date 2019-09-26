@@ -7,11 +7,11 @@
     <data>
         <variable
                 name="handlers"
-                type="com.gianlucaparadise.castyourinstructions.adapters.MyRecipeRecyclerViewAdapter"
+                type="com.gianlucaparadise.castyourinstructions.adapters.MyRoutineRecyclerViewAdapter"
         />
         <variable
                 name="item"
-                type="com.gianlucaparadise.castyourinstructions.models.Recipe"
+                type="com.gianlucaparadise.castyourinstructions.models.Routine"
         />
     </data>
 
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:tag="@{item}"
-            android:onClick="@{handlers::onRecipeClicked}">
+            android:onClick="@{handlers::onRoutineClicked}">
 
         <TextView
                 android:id="@+id/content"

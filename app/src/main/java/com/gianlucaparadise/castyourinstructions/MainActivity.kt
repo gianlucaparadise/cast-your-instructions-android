@@ -13,17 +13,17 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.gianlucaparadise.castyourinstructions.cast.CastManager
 import com.gianlucaparadise.castyourinstructions.databinding.ActivityMainBinding
-import com.gianlucaparadise.castyourinstructions.fragments.RecipeDetailFragment
-import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragment
-import com.gianlucaparadise.castyourinstructions.fragments.RecipesListFragmentDirections
-import com.gianlucaparadise.castyourinstructions.models.Recipe
+import com.gianlucaparadise.castyourinstructions.fragments.RoutineDetailFragment
+import com.gianlucaparadise.castyourinstructions.fragments.RoutinesListFragment
+import com.gianlucaparadise.castyourinstructions.fragments.RoutinesListFragmentDirections
+import com.gianlucaparadise.castyourinstructions.models.Routine
 import com.gianlucaparadise.castyourinstructions.viewmodels.MainViewModel
 import com.gianlucaparadise.castyourinstructions.views.PlayerListener
 import com.google.android.gms.cast.framework.CastButtonFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInteractionListener,
-    RecipeDetailFragment.OnDetailFragmentInteractionListener, PlayerListener {
+class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInteractionListener,
+    RoutineDetailFragment.OnDetailFragmentInteractionListener, PlayerListener {
 
     private val TAG = "Cast-your-instructions"
 
@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         return true
     }
 
-    override fun onCastClicked(recipe: Recipe) {
-        castManager.load(recipe)
+    override fun onCastClicked(routine: Routine) {
+        castManager.load(routine)
     }
 
     override fun onPlayClicked() {
@@ -99,12 +99,12 @@ class MainActivity : AppCompatActivity(), RecipesListFragment.OnListFragmentInte
         castManager.stop()
     }
 
-    override fun onListFragmentInteraction(recipe: Recipe?) {
-        Log.d(TAG, "Recipe clicked $recipe")
-        if (recipe == null) return
+    override fun onListFragmentInteraction(routine: Routine?) {
+        Log.d(TAG, "Routine clicked $routine")
+        if (routine == null) return
 
         val action =
-            RecipesListFragmentDirections.actionRecipesListFragmentToRecipeDetailFragment(recipe)
+            RoutinesListFragmentDirections.actionRoutinesListFragmentToRoutineDetailFragment(routine)
         findNavController(R.id.nav_host_fragment).navigate(action)
     }
 }
