@@ -2,12 +2,12 @@ package com.gianlucaparadise.castyourinstructions.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.gianlucaparadise.castyourinstructions.models.Recipes
-import com.gianlucaparadise.castyourinstructions.repositories.RecipeRepository
+import com.gianlucaparadise.castyourinstructions.models.Routines
+import com.gianlucaparadise.castyourinstructions.repositories.RoutineRepository
 
 
-class RecipesListViewModel : ViewModel() {
+class RoutinesListViewModel : ViewModel() {
 
-    val recipesObservable: LiveData<Recipes> = RecipeRepository.instance.getRecipes()
+    val routinesObservable: LiveData<Routines> = RoutineRepository.instance.getRoutines()
 
 }

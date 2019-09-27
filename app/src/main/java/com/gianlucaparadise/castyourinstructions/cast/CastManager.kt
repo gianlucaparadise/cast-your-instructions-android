@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.navigation.navOptions
 import com.gianlucaparadise.castyourinstructions.MainActivity
 import com.gianlucaparadise.castyourinstructions.models.*
 import com.google.android.gms.cast.framework.CastContext
@@ -17,7 +16,7 @@ class CastManager(
     val mainActivity: MainActivity,
     val lifecycle: Lifecycle,
     var listener: CastManagerListener? = null
-) : LifecycleObserver, MyChannelListener {
+) : LifecycleObserver, RoutineCastingChannelListener {
 
     private val TAG = "CastManager"
 
@@ -25,7 +24,7 @@ class CastManager(
 
     private var mCastContext: CastContext? = null
 
-    private val myChannel = MyChannel(this)
+    private val myChannel = RoutineCastingChannel(this)
     private var mCastSession: CastSession? = null
         set(value) {
             field = value

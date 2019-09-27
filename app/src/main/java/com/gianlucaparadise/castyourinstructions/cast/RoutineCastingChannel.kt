@@ -6,9 +6,9 @@ import com.google.android.gms.cast.Cast
 import com.google.android.gms.cast.CastDevice
 import com.google.gson.Gson
 
-class MyChannel(private val listener: MyChannelListener? = null) : Cast.MessageReceivedCallback {
+class RoutineCastingChannel(private val listener: RoutineCastingChannelListener? = null) : Cast.MessageReceivedCallback {
 
-    private val TAG = "MyChannel"
+    private val TAG = "RoutineCastingChannel"
 
     val namespace = "urn:x-cast:cast-your-instructions"
 
@@ -23,7 +23,7 @@ class MyChannel(private val listener: MyChannelListener? = null) : Cast.MessageR
 
 }
 
-interface MyChannelListener {
+interface RoutineCastingChannelListener {
     val gson: Gson
     fun onMessageReceived(responseMessage: CastMessageResponse)
 }

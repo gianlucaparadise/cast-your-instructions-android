@@ -1,9 +1,9 @@
 package com.gianlucaparadise.castyourinstructions.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.gianlucaparadise.castyourinstructions.models.Recipe
+import com.gianlucaparadise.castyourinstructions.models.Routine
 
-class RecipeDetailViewModel : ViewModel() {
+class RoutineDetailViewModel : ViewModel() {
 
-    var recipe: Recipe? = null
+    var routine: Routine? = null
 }
