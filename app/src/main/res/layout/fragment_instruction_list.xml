@@ -7,6 +7,9 @@
 
     <data>
         <import type="androidx.lifecycle.LiveData" />
+        <import type="com.gianlucaparadise.castyourinstructions.viewmodels.MainViewModel" />
+        <import type="android.view.View" />
+
         <variable name="vm" type="com.gianlucaparadise.castyourinstructions.viewmodels.RoutineDetailViewModel"/>
         <variable name="handlers" type="com.gianlucaparadise.castyourinstructions.fragments.RoutineDetailFragment"/>
     </data>
@@ -38,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:text="Cast"
                 android:onClick="@{handlers::onSendClicked}"
+                android:visibility="@{vm.castState == MainViewModel.CastStateValue.STARTED ? View.VISIBLE : View.GONE}"
                 app:layout_constraintTop_toTopOf="@+id/detail_title"
                 app:layout_constraintBottom_toBottomOf="@id/detail_title"
                 app:layout_constraintEnd_toEndOf="parent"

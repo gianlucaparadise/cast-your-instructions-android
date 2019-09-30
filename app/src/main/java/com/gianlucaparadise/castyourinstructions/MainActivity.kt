@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInt
 
     private val TAG = "Cast-your-instructions"
 
-    private lateinit var viewModel: MainViewModel
+    lateinit var viewModel: MainViewModel
     private lateinit var castManager: CastManager
 
     private var mediaRouteMenuItem: MenuItem? = null

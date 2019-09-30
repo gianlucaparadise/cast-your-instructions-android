@@ -11,10 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.gianlucaparadise.castyourinstructions.MainActivity
 import com.gianlucaparadise.castyourinstructions.R
 import com.gianlucaparadise.castyourinstructions.adapters.MyInstructionRecyclerViewAdapter
 import com.gianlucaparadise.castyourinstructions.databinding.FragmentInstructionListBinding
 import com.gianlucaparadise.castyourinstructions.models.Routine
+import com.gianlucaparadise.castyourinstructions.viewmodels.MainViewModel
 import com.gianlucaparadise.castyourinstructions.viewmodels.RoutineDetailViewModel
 import kotlinx.android.synthetic.main.fragment_instruction_list.*
 
@@ -33,11 +35,15 @@ class RoutineDetailFragment : Fragment() {
     ): View? {
 
         viewModel = activity?.run {
-            ViewModelProviders.of(activity!!)[RoutineDetailViewModel::class.java]
+            ViewModelProviders.of(this)[RoutineDetailViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
 
         val routine = arguments.routine
         viewModel.routine = routine
+
+        viewModel.mainViewModel = activity?.run {
+            ViewModelProviders.of(this)[MainViewModel::class.java]
+        } ?: throw Exception("Invalid Activity")
 
         val binding: FragmentInstructionListBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_instruction_list, container, false)
         val view : View  = binding.root
