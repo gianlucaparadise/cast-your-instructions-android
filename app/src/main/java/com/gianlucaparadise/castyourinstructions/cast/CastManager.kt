@@ -1,5 +1,6 @@
 package com.gianlucaparadise.castyourinstructions.cast
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -111,6 +112,13 @@ class CastManager(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         Log.d(TAG, "Activity: ON_RESUME")
+
+        // Intent with format: "<your_app_scheme>://<your_app_host><your_app_path>"
+        val intentToJoinUri = Uri.parse("https://cast-your-instructions.surge.sh/cast/join")
+        if (mainActivity.intent?.data?.equals(intentToJoinUri) == true) {
+            mSessionManager.startSession(mainActivity.intent)
+        }
+
         mCastSession = mSessionManager.currentCastSession
         mSessionManager.addSessionManagerListener(mSessionManagerListener, CastSession::class.java)
     }
@@ -125,28 +133,30 @@ class CastManager(
     private inner class CastSessionManagerListener : SessionManagerListener<CastSession> {
         private var TAG = "SessionManagerListenerImpl"
 
-        override fun onSessionSuspended(p0: CastSession?, p1: Int) {
+        override fun onSessionSuspended(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionSuspended")
         }
 
-        override fun onSessionStarting(p0: CastSession?) {
+        override fun onSessionStarting(session: CastSession?) {
             Log.d(TAG, "onSessionStarting")
+            mCastSession = session
         }
 
-        override fun onSessionResuming(p0: CastSession?, p1: String?) {
+        override fun onSessionResuming(session: CastSession?, p1: String?) {
             Log.d(TAG, "onSessionResuming")
+            mCastSession = session
         }
 
-        override fun onSessionEnding(p0: CastSession?) {
+        override fun onSessionEnding(session: CastSession?) {
             Log.d(TAG, "onSessionEnding")
         }
 
-        override fun onSessionStartFailed(p0: CastSession?, p1: Int) {
+        override fun onSessionStartFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionStartFailed")
             listener?.onCastStopped()
         }
 
-        override fun onSessionResumeFailed(p0: CastSession?, p1: Int) {
+        override fun onSessionResumeFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionResumeFailed")
             listener?.onCastStopped()
         }
@@ -159,6 +169,7 @@ class CastManager(
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.d(TAG, "onSessionResumed")
+            mCastSession = session
             listener?.onCastStarted()
         }
 

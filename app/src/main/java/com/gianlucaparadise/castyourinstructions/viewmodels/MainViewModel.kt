@@ -72,6 +72,9 @@ class MainViewModel : ViewModel(), CastManager.CastManagerListener {
         super.onSelectedInstruction(routine, selectedInstructionIndex)
         Log.d(TAG, "Selected instruction: $selectedInstructionIndex")
 
+        routineTitle.value = routine?.title
+        canPlay.value = false
+
         val instructions = routine?.instructions ?: return
         if (selectedInstructionIndex == null || selectedInstructionIndex >= instructions.size) return
 
