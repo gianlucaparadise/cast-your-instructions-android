@@ -9,7 +9,7 @@
         "name": "Prepare the water",
         "description": "Fill a large and tall pot with natural water and put a lid on (to make water boil faster). If you want to reduce the time you can use hot water.",
         "countdown": 3,
-        "videoUrl": "TBD"
+        "videoUrl": "arm-extension.webm"
       },
       {
         "id": 2,
@@ -58,7 +58,7 @@
         "name": "Mix the ingredients",
         "description": "In a large bowl (or in an electric mixer) combine self-rising flour, yogurt and a generous pinch of salt.",
         "countdown": 3,
-        "videoUrl": "TBD"
+        "videoUrl": "back-extension.webm"
       },
       {
         "id": 2,
@@ -107,7 +107,7 @@
         "name": "Prepare the butter",
         "description": "Let butter soften at room temperature.",
         "countdown": 3,
-        "videoUrl": "TBD"
+        "videoUrl": "seated-leg-press.webm"
       },
       {
         "id": 2,
@@ -205,7 +205,7 @@
         "name": "Warm the milk",
         "description": "Warm the milk in a small saucepan or in the microwave. Cover and set aside.",
         "countdown": 3,
-        "videoUrl": "TBD"
+        "videoUrl": "missing.video"
       },
       {
         "id": 2,
