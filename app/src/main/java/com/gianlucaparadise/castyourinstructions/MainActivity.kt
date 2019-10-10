@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import com.gianlucaparadise.castyourinstructions.application.MyApplication
 import com.gianlucaparadise.castyourinstructions.cast.CastManager
 import com.gianlucaparadise.castyourinstructions.databinding.ActivityMainBinding
 import com.gianlucaparadise.castyourinstructions.fragments.RoutineDetailFragment
@@ -28,7 +29,8 @@ class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInt
     private val TAG = "Cast-your-instructions"
 
     lateinit var viewModel: MainViewModel
-    private lateinit var castManager: CastManager
+    private val castManager: CastManager
+        get() = MyApplication.instance.castManager
 
     private var mediaRouteMenuItem: MenuItem? = null
 
@@ -62,8 +64,7 @@ class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInt
             })
 
         binding.vm = viewModel
-
-        castManager = CastManager(this, lifecycle, viewModel)
+        castManager.addListener(viewModel)
 
         player.listener = this
     }

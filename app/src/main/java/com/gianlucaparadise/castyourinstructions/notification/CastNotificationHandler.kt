@@ -2,7 +2,9 @@ package com.gianlucaparadise.castyourinstructions.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -10,39 +12,43 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.gianlucaparadise.castyourinstructions.R
-import com.gianlucaparadise.castyourinstructions.application.MyApplication
-import android.app.PendingIntent
-import android.content.Intent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.gianlucaparadise.castyourinstructions.MainActivity
+import com.gianlucaparadise.castyourinstructions.R
+import com.gianlucaparadise.castyourinstructions.cast.CastManager
+import com.gianlucaparadise.castyourinstructions.models.Routine
 
 
-class CastNotificationHandler : LifecycleObserver {
+class CastNotificationHandler(context: Context) : LifecycleObserver,
+    CastManager.CastManagerListener {
 
-    private val tag = "CastNotificationHandler"
+    companion object {
+        const val TAG = "CastNotificationHandler"
+    }
+
+    private val context: Context = context.applicationContext
 
     private val channelName = "Cast your Instruction Player"
     private val channelDescription = "Player to control the casted instruction on the TV"
     private val channelId = "cast:instruction:player:channel"
     private val notificationId = 7
 
-    val context: Context
-        get() = MyApplication.instance
-
     init {
+        Log.d(TAG, "Constructed")
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         createNotificationChannel()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onApplicationStarted() {
-        Log.d(tag, "Canceling notification")
-        cancelNotification()
+        Log.d(TAG, "Canceling notification")
+        //cancelNotification()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onApplicationStopped() {
-        Log.d(tag, "Showing notification")
-        showNotification()
+        Log.d(TAG, "Showing notification")
+        //showNotification()
     }
 
     private fun createNotificationChannel() {
@@ -50,7 +56,8 @@ class CastNotificationHandler : LifecycleObserver {
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-        val importance = NotificationManager.IMPORTANCE_LOW // this is to avoid notification sound or vibration
+        val importance =
+            NotificationManager.IMPORTANCE_LOW // this is to avoid notification sound or vibration
         val channel = NotificationChannel(channelId, channelName, importance).apply {
             description = channelDescription
         }
@@ -60,10 +67,16 @@ class CastNotificationHandler : LifecycleObserver {
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun showNotification() {
+    fun showNotification(routine: Routine?, selectedInstructionIndex: Int? = null) {
         val intent = Intent(context, MainActivity::class.java)
         // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
+        val title = routine?.title
+        var selectedInstruction: String? = null
+        if (selectedInstructionIndex != null) {
+            selectedInstruction = routine?.instructions?.getOrNull(selectedInstructionIndex)?.name
+        }
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
@@ -78,13 +91,14 @@ class CastNotificationHandler : LifecycleObserver {
             .addAction(R.drawable.quantum_ic_stop_white_24, "Stop", null) // #3
 
             // Apply the media style template
-            .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(0 /* #1: pause button \*/)
+            .setStyle(
+                androidx.media.app.NotificationCompat.MediaStyle()
+                    .setShowActionsInCompactView(0 /* #1: pause button \*/)
                 //.setMediaSession(mediaSession.getSessionToken())
             )
 
-            .setContentTitle("Title")
-            .setContentText("Content")
+            .setContentTitle(title)
+            .setContentText(selectedInstruction)
             .setContentIntent(pendingIntent) // Open app on tap
             .setOngoing(true) // this is to make notification sticky
             .setPriority(NotificationCompat.PRIORITY_LOW) // this is to avoid notification sound or vibration
@@ -101,4 +115,36 @@ class CastNotificationHandler : LifecycleObserver {
             cancel(notificationId)
         }
     }
+
+    //region CastManagerListener
+    override fun onLoaded(routine: Routine?) {
+        super.onLoaded(routine)
+        Log.d(TAG, "Cast onLoaded")
+        showNotification(routine)
+    }
+
+    override fun onPlayed(routine: Routine?) {
+        super.onPlayed(routine)
+        Log.d(TAG, "Cast onPlayed")
+        showNotification(routine)
+    }
+
+    override fun onPaused(routine: Routine?) {
+        super.onPaused(routine)
+        Log.d(TAG, "Cast onPaused")
+        showNotification(routine)
+    }
+
+    override fun onStopped(routine: Routine?) {
+        super.onStopped(routine)
+        Log.d(TAG, "Cast onStopped")
+        cancelNotification()
+    }
+
+    override fun onSelectedInstruction(routine: Routine?, selectedInstructionIndex: Int?) {
+        super.onSelectedInstruction(routine, selectedInstructionIndex)
+        Log.d(TAG, "Cast onSelectedInstruction")
+        showNotification(routine, selectedInstructionIndex)
+    }
+    //endregion
 }

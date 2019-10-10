@@ -1,11 +1,11 @@
 package com.gianlucaparadise.castyourinstructions.cast
 
-import android.net.Uri
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.gianlucaparadise.castyourinstructions.MainActivity
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.gianlucaparadise.castyourinstructions.models.*
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
@@ -13,15 +13,15 @@ import com.google.android.gms.cast.framework.SessionManager
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.gson.Gson
 
-class CastManager(
-    val mainActivity: MainActivity,
-    val lifecycle: Lifecycle,
-    var listener: CastManagerListener? = null
-) : LifecycleObserver, RoutineCastingChannelListener {
+class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelListener {
 
-    private val TAG = "CastManager"
+    companion object {
+        const val TAG = "CastManager"
+    }
 
-    override val gson : Gson by lazy { Gson() }
+    private val context: Context = context.applicationContext
+
+    override val gson: Gson by lazy { Gson() }
 
     private var mCastContext: CastContext? = null
 
@@ -32,8 +32,7 @@ class CastManager(
 
             try {
                 field?.setMessageReceivedCallbacks(myChannel.namespace, myChannel)
-            }
-            catch (e: java.lang.Exception) {
+            } catch (e: java.lang.Exception) {
                 Log.e(TAG, "Exception while creating channel", e)
             }
         }
@@ -41,9 +40,13 @@ class CastManager(
     private lateinit var mSessionManager: SessionManager
     private val mSessionManagerListener = CastSessionManagerListener()
 
+    private val listeners = mutableListOf<CastManagerListener>()
+    fun addListener(listener: CastManagerListener) = listeners.add(listener)
+    fun removeListener(listener: CastManagerListener) = listeners.remove(listener)
+
     init {
         Log.d(TAG, "Constructed")
-        lifecycle.addObserver(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
 
     fun load(routine: Routine) {
@@ -84,17 +87,22 @@ class CastManager(
     }
 
     override fun onMessageReceived(responseMessage: CastMessageResponse) {
-        val listener = listener ?: return
+        if (!listeners.any()) return
 
         val routine = responseMessage.routine
         val selectedInstructionIndex = responseMessage.selectedInstructionIndex
 
-        when(responseMessage.type) {
-            ResponseMessageType.LOADED -> listener.onLoaded(routine)
-            ResponseMessageType.PLAYED -> listener.onPlayed(routine)
-            ResponseMessageType.PAUSED -> listener.onPaused(routine)
-            ResponseMessageType.STOPPED -> listener.onStopped(routine)
-            ResponseMessageType.SELECTED_INSTRUCTION -> listener.onSelectedInstruction(routine, selectedInstructionIndex)
+        when (responseMessage.type) {
+            ResponseMessageType.LOADED -> listeners.forEach { it.onLoaded(routine) }
+            ResponseMessageType.PLAYED -> listeners.forEach { it.onPlayed(routine) }
+            ResponseMessageType.PAUSED -> listeners.forEach { it.onPaused(routine) }
+            ResponseMessageType.STOPPED -> listeners.forEach { it.onStopped(routine) }
+            ResponseMessageType.SELECTED_INSTRUCTION -> listeners.forEach {
+                it.onSelectedInstruction(
+                    routine,
+                    selectedInstructionIndex
+                )
+            }
             null -> {
                 // pass
             }
@@ -104,8 +112,8 @@ class CastManager(
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
         Log.d(TAG, "Activity: ON_CREATE")
-        mCastContext = CastContext.getSharedInstance(mainActivity)
-        mSessionManager = CastContext.getSharedInstance(mainActivity).sessionManager
+        mCastContext = CastContext.getSharedInstance(context)
+        mSessionManager = CastContext.getSharedInstance(context).sessionManager
         mCastSession = mCastContext!!.sessionManager.currentCastSession
     }
 
@@ -114,10 +122,10 @@ class CastManager(
         Log.d(TAG, "Activity: ON_RESUME")
 
         // Intent with format: "<your_app_scheme>://<your_app_host><your_app_path>"
-        val intentToJoinUri = Uri.parse("https://cast-your-instructions.surge.sh/cast/join")
-        if (mainActivity.intent?.data?.equals(intentToJoinUri) == true) {
-            mSessionManager.startSession(mainActivity.intent)
-        }
+        // val intentToJoinUri = Uri.parse("https://cast-your-instructions.surge.sh/cast/join")
+        // if (mainActivity.intent?.data?.equals(intentToJoinUri) == true) {
+        //     mSessionManager.startSession(mainActivity.intent)
+        // }
 
         mCastSession = mSessionManager.currentCastSession
         mSessionManager.addSessionManagerListener(mSessionManagerListener, CastSession::class.java)
@@ -126,7 +134,10 @@ class CastManager(
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause() {
         Log.d(TAG, "Activity: ON_PAUSE")
-        mSessionManager.removeSessionManagerListener(mSessionManagerListener, CastSession::class.java)
+        mSessionManager.removeSessionManagerListener(
+            mSessionManagerListener,
+            CastSession::class.java
+        )
         mCastSession = null
     }
 
@@ -153,29 +164,29 @@ class CastManager(
 
         override fun onSessionStartFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionStartFailed")
-            listener?.onCastStopped()
+            listeners.forEach { it.onCastStopped() }
         }
 
         override fun onSessionResumeFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionResumeFailed")
-            listener?.onCastStopped()
+            listeners.forEach { it.onCastStopped() }
         }
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             Log.d(TAG, "onSessionStarted")
             mCastSession = session
-            listener?.onCastStarted()
+            listeners.forEach { it.onCastStarted() }
         }
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.d(TAG, "onSessionResumed")
             mCastSession = session
-            listener?.onCastStarted()
+            listeners.forEach { it.onCastStarted() }
         }
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.d(TAG, "onSessionEnded")
-            listener?.onCastStopped()
+            listeners.forEach { it.onCastStopped() }
         }
     }
 
