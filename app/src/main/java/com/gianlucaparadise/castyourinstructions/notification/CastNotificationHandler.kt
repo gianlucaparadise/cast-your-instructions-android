@@ -15,6 +15,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.gianlucaparadise.castyourinstructions.MainActivity
 import com.gianlucaparadise.castyourinstructions.R
+import com.gianlucaparadise.castyourinstructions.application.MyApplication
 import com.gianlucaparadise.castyourinstructions.cast.CastManager
 import com.gianlucaparadise.castyourinstructions.models.Routine
 
@@ -33,6 +34,8 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
     private val channelId = "cast:instruction:player:channel"
     private val notificationId = 7
 
+    private var isAppInBackground = false
+
     init {
         Log.d(TAG, "Constructed")
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
@@ -41,14 +44,16 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onApplicationStarted() {
-        Log.d(TAG, "Canceling notification")
-        //cancelNotification()
+        Log.d(TAG, "App started")
+        isAppInBackground = false
+        cancelNotification()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onApplicationStopped() {
-        Log.d(TAG, "Showing notification")
-        //showNotification()
+        Log.d(TAG, "App in background")
+        isAppInBackground = true
+        showNotification()
     }
 
     private fun createNotificationChannel() {
@@ -67,41 +72,54 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
         notificationManager.createNotificationChannel(channel)
     }
 
-    fun showNotification(routine: Routine?, selectedInstructionIndex: Int? = null) {
+    /**
+     * Notification is shown only when app is in background and connected to Chromecast
+     */
+    private fun showNotification() {
+        // TODO: remove the following line to avoid reference to application for better decoupling
+        val castManager =  MyApplication.instance.castManager
+
+        if (!isAppInBackground) return
+        if (castManager.castConnectionState.value != CastManager.CastConnectionState.CONNECTED) return
+
         val intent = Intent(context, MainActivity::class.java)
         // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
-        val title = routine?.title
-        var selectedInstruction: String? = null
-        if (selectedInstructionIndex != null) {
-            selectedInstruction = routine?.instructions?.getOrNull(selectedInstructionIndex)?.name
-        }
+        val routine = castManager.routine.value
+        val selectedInstruction = MyApplication.instance.castManager.lastSelectedInstruction.value
 
-        val builder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+        val title = routine?.title
+        val selectedInstructionName: String? = selectedInstruction?.name
+
+        val builder = NotificationCompat.Builder(context, channelId).apply {
+            setSmallIcon(R.drawable.cast_ic_notification_small_icon)
 
             // Show controls on lock screen even when user hides sensitive content.
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
             // Add media control buttons that invoke intents in your media service
-            //.addAction(R.drawable.cast_ic_notification_skip_prev, "Previous", null) // #0
-            .addAction(R.drawable.cast_ic_notification_pause, "Pause", null) // #1
-            //.addAction(R.drawable.cast_ic_notification_skip_next, "Next", null) // #2
-            .addAction(R.drawable.quantum_ic_stop_white_24, "Stop", null) // #3
+            if (castManager.castPlayerState.value == CastManager.CastPlayerState.PLAYING) {
+                addAction(R.drawable.cast_ic_notification_pause, "Pause", null) // #0
+            }
+            else {
+                addAction(R.drawable.cast_ic_notification_play, "Play", null) // #0
+            }
+            addAction(R.drawable.quantum_ic_stop_white_24, "Stop", null) // #1
 
             // Apply the media style template
-            .setStyle(
+            setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
-                    .setShowActionsInCompactView(0 /* #1: pause button \*/)
+                    .setShowActionsInCompactView(0 /* #0: play/pause button \*/)
                 //.setMediaSession(mediaSession.getSessionToken())
             )
 
-            .setContentTitle(title)
-            .setContentText(selectedInstruction)
-            .setContentIntent(pendingIntent) // Open app on tap
-            .setOngoing(true) // this is to make notification sticky
-            .setPriority(NotificationCompat.PRIORITY_LOW) // this is to avoid notification sound or vibration
+            setContentTitle(title)
+            setContentText(selectedInstructionName)
+            setContentIntent(pendingIntent) // Open app on tap
+            setOngoing(true) // this is to make notification sticky
+            setPriority(NotificationCompat.PRIORITY_LOW) // this is to avoid notification sound or vibration
+        }
 
         with(NotificationManagerCompat.from(context)) {
             // notificationId is a unique int for each notification that you must define
@@ -109,7 +127,7 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
         }
     }
 
-    fun cancelNotification() {
+    private fun cancelNotification() {
         with(NotificationManagerCompat.from(context)) {
             // notificationId is a unique int for each notification that you must define
             cancel(notificationId)
@@ -120,19 +138,19 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
     override fun onLoaded(routine: Routine?) {
         super.onLoaded(routine)
         Log.d(TAG, "Cast onLoaded")
-        showNotification(routine)
+        showNotification()
     }
 
     override fun onPlayed(routine: Routine?) {
         super.onPlayed(routine)
         Log.d(TAG, "Cast onPlayed")
-        showNotification(routine)
+        showNotification()
     }
 
     override fun onPaused(routine: Routine?) {
         super.onPaused(routine)
         Log.d(TAG, "Cast onPaused")
-        showNotification(routine)
+        showNotification()
     }
 
     override fun onStopped(routine: Routine?) {
@@ -144,7 +162,13 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
     override fun onSelectedInstruction(routine: Routine?, selectedInstructionIndex: Int?) {
         super.onSelectedInstruction(routine, selectedInstructionIndex)
         Log.d(TAG, "Cast onSelectedInstruction")
-        showNotification(routine, selectedInstructionIndex)
+        showNotification()
+    }
+
+    override fun onCastStopped() {
+        super.onCastStopped()
+        Log.d(TAG, "Cast onCastStopped")
+        cancelNotification()
     }
     //endregion
 }

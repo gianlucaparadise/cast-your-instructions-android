@@ -2,10 +2,7 @@ package com.gianlucaparadise.castyourinstructions.cast
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.*
 import com.gianlucaparadise.castyourinstructions.models.*
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
@@ -39,6 +36,11 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
 
     private lateinit var mSessionManager: SessionManager
     private val mSessionManagerListener = CastSessionManagerListener()
+
+    val castConnectionState: MutableLiveData<CastConnectionState> = MutableLiveData()
+    val castPlayerState: MutableLiveData<CastPlayerState> = MutableLiveData()
+    val routine: MutableLiveData<Routine> = MutableLiveData()
+    val lastSelectedInstruction: MutableLiveData<Instruction?> = MutableLiveData()
 
     private val listeners = mutableListOf<CastManagerListener>()
     fun addListener(listener: CastManagerListener) = listeners.add(listener)
@@ -90,21 +92,36 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
         if (!listeners.any()) return
 
         val routine = responseMessage.routine
-        val selectedInstructionIndex = responseMessage.selectedInstructionIndex
+        this.routine.value = responseMessage.routine
 
         when (responseMessage.type) {
-            ResponseMessageType.LOADED -> listeners.forEach { it.onLoaded(routine) }
-            ResponseMessageType.PLAYED -> listeners.forEach { it.onPlayed(routine) }
-            ResponseMessageType.PAUSED -> listeners.forEach { it.onPaused(routine) }
-            ResponseMessageType.STOPPED -> listeners.forEach { it.onStopped(routine) }
+            ResponseMessageType.LOADED -> {
+                castPlayerState.value = CastPlayerState.LOADED
+                lastSelectedInstruction.value = null
+                listeners.forEach { it.onLoaded(routine) }
+            }
+            ResponseMessageType.PLAYED -> {
+                castPlayerState.value = CastPlayerState.PLAYING
+                listeners.forEach { it.onPlayed(routine) }
+            }
+            ResponseMessageType.PAUSED -> {
+                castPlayerState.value = CastPlayerState.PAUSED
+                listeners.forEach { it.onPaused(routine) }
+            }
+            ResponseMessageType.STOPPED -> {
+                castPlayerState.value = CastPlayerState.STOPPED
+                lastSelectedInstruction.value = null
+                listeners.forEach { it.onStopped(routine) }
+            }
             ResponseMessageType.SELECTED_INSTRUCTION -> listeners.forEach {
-                it.onSelectedInstruction(
-                    routine,
-                    selectedInstructionIndex
-                )
+                val selectedInstructionIndex = responseMessage.selectedInstructionIndex
+                lastSelectedInstruction.value =
+                    routine?.instructions?.getOrNull(selectedInstructionIndex ?: -1)
+                it.onSelectedInstruction(routine, selectedInstructionIndex)
             }
             null -> {
                 // pass
+                Log.d(TAG, "State not handled: ${responseMessage.type}")
             }
         }
     }
@@ -164,30 +181,48 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
 
         override fun onSessionStartFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionStartFailed")
+            castConnectionState.value = CastConnectionState.NOT_CONNECTED
             listeners.forEach { it.onCastStopped() }
         }
 
         override fun onSessionResumeFailed(session: CastSession?, p1: Int) {
             Log.d(TAG, "onSessionResumeFailed")
+            castConnectionState.value = CastConnectionState.NOT_CONNECTED
             listeners.forEach { it.onCastStopped() }
         }
 
         override fun onSessionStarted(session: CastSession, sessionId: String) {
             Log.d(TAG, "onSessionStarted")
             mCastSession = session
+            castConnectionState.value = CastConnectionState.CONNECTED
             listeners.forEach { it.onCastStarted() }
         }
 
         override fun onSessionResumed(session: CastSession, wasSuspended: Boolean) {
             Log.d(TAG, "onSessionResumed")
             mCastSession = session
+            castConnectionState.value = CastConnectionState.CONNECTED
             listeners.forEach { it.onCastStarted() }
         }
 
         override fun onSessionEnded(session: CastSession, error: Int) {
             Log.d(TAG, "onSessionEnded")
+            castConnectionState.value = CastConnectionState.NOT_CONNECTED
             listeners.forEach { it.onCastStopped() }
         }
+    }
+
+    enum class CastConnectionState {
+        NOT_CONNECTED,
+        CONNECTED,
+    }
+
+    enum class CastPlayerState {
+        UNLOADED,
+        LOADED,
+        STOPPED,
+        PLAYING,
+        PAUSED,
     }
 
     interface CastManagerListener {
