@@ -127,7 +127,7 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        Log.d(TAG, "Activity: ON_CREATE")
+        Log.d(TAG, "App: ON_CREATE")
         mCastContext = CastContext.getSharedInstance(context)
         mSessionManager = CastContext.getSharedInstance(context).sessionManager
         mCastSession = mCastContext!!.sessionManager.currentCastSession
@@ -135,7 +135,7 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
-        Log.d(TAG, "Activity: ON_RESUME")
+        Log.d(TAG, "App: ON_RESUME")
 
         // Intent with format: "<your_app_scheme>://<your_app_host><your_app_path>"
         // val intentToJoinUri = Uri.parse("https://cast-your-instructions.surge.sh/cast/join")
@@ -149,7 +149,7 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onPause() {
-        Log.d(TAG, "Activity: ON_PAUSE")
+        Log.d(TAG, "App: ON_PAUSE")
         mSessionManager.removeSessionManagerListener(
             mSessionManagerListener,
             CastSession::class.java

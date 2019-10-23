@@ -26,7 +26,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInteractionListener,
     RoutineDetailFragment.OnDetailFragmentInteractionListener, PlayerListener {
 
-    private val TAG = "Cast-your-instructions"
+    companion object {
+        const val TAG = "Cast-your-instructions"
+    }
 
     lateinit var viewModel: MainViewModel
     private val castManager: CastManager
@@ -36,6 +38,8 @@ class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "OnCreate")
 
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(
             this, R.layout.activity_main
@@ -74,6 +78,7 @@ class MainActivity : AppCompatActivity(), RoutinesListFragment.OnListFragmentInt
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
+        Log.d(TAG, "onCreateOptionsMenu")
         menuInflater.inflate(R.menu.main, menu)
         mediaRouteMenuItem =
             CastButtonFactory.setUpMediaRouteButton(

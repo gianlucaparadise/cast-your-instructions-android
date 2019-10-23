@@ -3,12 +3,15 @@ package com.gianlucaparadise.castyourinstructions.viewmodels
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.gianlucaparadise.castyourinstructions.application.MyApplication
 import com.gianlucaparadise.castyourinstructions.cast.CastManager
 import com.gianlucaparadise.castyourinstructions.models.Routine
 
 class MainViewModel : ViewModel(), CastManager.CastManagerListener {
 
-    private val TAG = "MainViewModel"
+    companion object {
+        const val TAG = "MainViewModel"
+    }
 
     val routineTitle: MutableLiveData<String> = MutableLiveData()
     val currentInstructionTitle: MutableLiveData<String> = MutableLiveData()
@@ -23,10 +26,23 @@ class MainViewModel : ViewModel(), CastManager.CastManagerListener {
     val canPlay: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
-        routineTitle.value = ""
-        castState.value = CastStateValue.STOPPED
-        isPlayerVisible.value = false
-        canPlay.value = true
+        Log.d(TAG, "Init")
+
+        // TODO: remove the following line to avoid reference to application for better decoupling
+        val castManager =  MyApplication.instance.castManager
+
+        when (castManager.castConnectionState.value) {
+            CastManager.CastConnectionState.CONNECTED -> onCastStarted()
+            CastManager.CastConnectionState.NOT_CONNECTED -> onCastStopped()
+            else -> Log.d(TAG, "State not handled: ${castManager.castConnectionState.value}")
+        }
+
+        routineTitle.value = castManager.routine.value?.title ?: ""
+
+        val selectedInstruction = castManager.lastSelectedInstruction.value
+        if (selectedInstruction != null) {
+            currentInstructionTitle.value = selectedInstruction.name
+        }
     }
 
     override fun onCastStarted() {
