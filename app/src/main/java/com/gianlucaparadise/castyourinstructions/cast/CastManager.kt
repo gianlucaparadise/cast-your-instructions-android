@@ -75,7 +75,7 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
         try {
             val castSession = mCastSession
             if (castSession == null) {
-                Log.d("MainActivity", "No session")
+                Log.d(TAG, "No session")
                 return
             }
 
@@ -119,8 +119,7 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
                     routine?.instructions?.getOrNull(selectedInstructionIndex ?: -1)
                 it.onSelectedInstruction(routine, selectedInstructionIndex)
             }
-            null -> {
-                // pass
+            else -> {
                 Log.d(TAG, "State not handled: ${responseMessage.type}")
             }
         }
@@ -155,7 +154,8 @@ class CastManager(context: Context) : LifecycleObserver, RoutineCastingChannelLi
             mSessionManagerListener,
             CastSession::class.java
         )
-        mCastSession = null
+        // I can't set this to null because I need the cast session to send commands from notification
+        // mCastSession = null
     }
 
     private inner class CastSessionManagerListener : SessionManagerListener<CastSession> {

@@ -82,10 +82,6 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
         if (!isAppInBackground) return
         if (castManager.castConnectionState.value != CastManager.CastConnectionState.CONNECTED) return
 
-        val intent = Intent(context, MainActivity::class.java)
-        // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-
         val routine = castManager.routine.value
         val selectedInstruction = MyApplication.instance.castManager.lastSelectedInstruction.value
 
@@ -98,14 +94,47 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
             // Show controls on lock screen even when user hides sensitive content.
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
+            // region On Notification Tapped
+            val intent = Intent(context, MainActivity::class.java)
+            // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
+            setContentIntent(pendingIntent) // Open app on tap
+            // endregion
+
             // Add media control buttons that invoke intents in your media service
             if (castManager.castPlayerState.value == CastManager.CastPlayerState.PLAYING) {
-                addAction(R.drawable.cast_ic_notification_pause, "Pause", null) // #0
+                // region Play button
+                val pauseIntent = Intent(context, CastNotificationBroadcastReceiver::class.java).apply {
+                    action = CastNotificationBroadcastReceiver.ACTION_PAUSE
+                }
+                val pausePendingIntent: PendingIntent =
+                    PendingIntent.getBroadcast(context, 0, pauseIntent, 0)
+
+                addAction(R.drawable.cast_ic_notification_pause, "Pause", pausePendingIntent) // #0
+                // endregion
             }
             else {
-                addAction(R.drawable.cast_ic_notification_play, "Play", null) // #0
+                // region Pause button
+                val playIntent = Intent(context, CastNotificationBroadcastReceiver::class.java).apply {
+                    action = CastNotificationBroadcastReceiver.ACTION_PLAY
+                }
+                val playPendingIntent: PendingIntent =
+                    PendingIntent.getBroadcast(context, 0, playIntent, 0)
+
+                addAction(R.drawable.cast_ic_notification_play, "Play", playPendingIntent) // #0
+                // endregion
             }
-            addAction(R.drawable.quantum_ic_stop_white_24, "Stop", null) // #1
+
+            // region Stop button
+            val stopIntent = Intent(context, CastNotificationBroadcastReceiver::class.java).apply {
+                action = CastNotificationBroadcastReceiver.ACTION_STOP
+            }
+            val stopPendingIntent: PendingIntent =
+                PendingIntent.getBroadcast(context, 0, stopIntent, 0)
+
+            addAction(R.drawable.quantum_ic_stop_white_24, "Stop", stopPendingIntent) // #1
+            // endregion
 
             // Apply the media style template
             setStyle(
@@ -116,7 +145,6 @@ class CastNotificationHandler(context: Context) : LifecycleObserver,
 
             setContentTitle(title)
             setContentText(selectedInstructionName)
-            setContentIntent(pendingIntent) // Open app on tap
             setOngoing(true) // this is to make notification sticky
             setPriority(NotificationCompat.PRIORITY_LOW) // this is to avoid notification sound or vibration
         }
